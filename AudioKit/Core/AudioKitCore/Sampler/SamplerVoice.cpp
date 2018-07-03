@@ -39,13 +39,21 @@ namespace AudioKitCore
         noteNumber = note;
     }
     
-    void SamplerVoice::restart(float volume, SampleBuffer* buffer)
+    void SamplerVoice::restart(float sampleRate, float frequency, float volume, SampleBuffer* buffer)
     {
+    	oscillator.increment = (buffer->sampleRate / sampleRate) * (frequency / buffer->noteFrequency);
+
         tempNoteVolume = noteVolume;
         newSampleBuffer = buffer;
         adsrEnvelope.restart();
         noteVolume = volume;
+
+        double sr = (double)sampleRate;
+        leftFilter.updateSampleRate(sr);
+        rightFilter.updateSampleRate(sr);
         filterEnvelope.start();
+
+        noteFrequency = frequency;
     }
     
     void SamplerVoice::release(bool loopThruRelease)

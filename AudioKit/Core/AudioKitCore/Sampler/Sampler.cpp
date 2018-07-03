@@ -63,7 +63,6 @@ namespace AudioKitCore {
         pBuf->maximumNoteNumber = sdd.sampleDescriptor.maximumNoteNumber;
         pBuf->minimumVelocity = sdd.sampleDescriptor.minimumVelocity;
         pBuf->maximumVelocity = sdd.sampleDescriptor.maximumVelocity;
-        sampleBufferList.push_back(pBuf);
         
         pBuf->init(sdd.sampleRate, sdd.channelCount, sdd.sampleCount);
         float* pData = sdd.data;
@@ -92,6 +91,8 @@ namespace AudioKitCore {
             if (sdd.sampleDescriptor.loopEndPoint > 1.0f) pBuf->loopEndPoint = sdd.sampleDescriptor.loopEndPoint;
             else pBuf->loopEndPoint = pBuf->endPoint * sdd.sampleDescriptor.loopEndPoint;
         }
+        
+        sampleBufferList.push_back(pBuf);
     }
     
     KeyMappedSampleBuffer* Sampler::lookupSample(unsigned noteNumber, unsigned velocity)
@@ -215,7 +216,7 @@ namespace AudioKitCore {
         if (pVoice)
         {
             // re-start the note
-            pVoice->restart(velocity / 127.0f, lookupSample(noteNumber, velocity));
+            pVoice->restart(sampleRate, noteFrequency, velocity / 127.0f, lookupSample(noteNumber, velocity));
             //printf("Restart note %d as %d\n", noteNumber, pVoice->noteNumber);
             return;
         }
